@@ -40,13 +40,6 @@ app.get('/jwtid', requireAuth, (req, res) => {
 
 //FIN LOGIN
 
-
-
-
-
-
-
-
 //App use 
 app.use(bodyParser.json());
 

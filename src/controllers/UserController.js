@@ -153,14 +153,13 @@ module.exports = class UserController {
         //return console.log(id)
         try {
 
-            const userDeleteinfo = await User.findOneAndDelete({ _id: id });
-            const { avater } = userDeleteinfo
+            const userDeleteinfo = await UserModel.findOneAndDelete({ _id: id });
+            // const { avater } = userDeleteinfo
 
-            if (avater) {
-                fs.unlinkSync(DIR + avater);
-            }
+            // if (avater) {
+            //     fs.unlinkSync(DIR + avater);
+            // }
 
-            //const userDelete = await User.deleteOne({_id: id});
             return res.status(200).json({
                 code: 200,
                 message: "User Delete Successfully",

@@ -10,7 +10,7 @@ const DataSchema = new mongoose.Schema({
         type: String,
         reqired: true
     },
-    categories:{
+    categories: {
         type: String,
         reqired: true
     },
@@ -22,22 +22,22 @@ const DataSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    isbn:{
-        type:String,
+    isbn: {
+        type: String,
         required: true
     },
-    nbr_pages:{
-        type:Number,
+    nbr_pages: {
+        type: Number,
         required: true
     },
-    image:{
+    image: {
         type: String,
         required: true
     }
-    
-    
-},{ timestamps: true, versionKey:false })
 
 
-const Book = mongoose.model('Book', DataSchema, 'books');
-module.exports = Book;
+}, { timestamps: true, versionKey: false })
+
+
+const BookModel = mongoose.model('Book', DataSchema, 'books');
+module.exports = BookModel;

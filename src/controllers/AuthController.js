@@ -42,6 +42,7 @@ module.exports.signIn = async(req, res) => {
         res.cookie('jwt', token, { httpOnly: true, maxAge });
         //On se fait un status 200 avec les infos pour dire que ça a marché
         res.status(200).json({ user: user._id })
+            // res.status(200).json({ user: user._id, token : jwt.sign({userId, isAdmin}) })
     } catch (err) {
         //signInErrors est une fonction que nous avons crée dans le fichier errors.utils.js du dossier utils
         const errors = signInErrors(err)

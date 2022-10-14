@@ -1,6 +1,6 @@
 //jsonwebtoken jout le rôle des sessions propre à chaque utilisateur comme avec php
 const jwt = require("jsonwebtoken");
-// const UserModel = require("../models/User");
+const UserModel = require("../src/models/User");
 
 //On crée une fonction checkUser si l'utilisateur est connecté tout au long du site
 //On check le token de l'utilisateur pour voir si on le connait
