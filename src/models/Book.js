@@ -8,11 +8,11 @@ const DataSchema = new mongoose.Schema({
     },
     author: {
         type: String,
-        reqired: true
+        required: true
     },
     categories: {
         type: String,
-        reqired: true
+        required: true
     },
     description: {
         type: String,
