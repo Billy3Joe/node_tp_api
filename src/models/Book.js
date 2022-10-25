@@ -8,11 +8,11 @@ const DataSchema = new mongoose.Schema({
     },
     author: {
         type: String,
-        required: true
+        reqired: true
     },
-    categories: {
+    categories:{
         type: String,
-        required: true
+        reqired: true
     },
     description: {
         type: String,
@@ -22,22 +22,32 @@ const DataSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    isbn: {
-        type: String,
+    isbn:{
+        type:String,
         required: true
     },
-    nbr_pages: {
-        type: Number,
+    nbr_pages:{
+        type:Number,
         required: true
     },
-    image: {
+    review:[
+        {
+          UserId: String,
+          grade: Number,
+          description:String,
+        },
+    ],
+    imageURL:{
+        type:String
+    },
+    image:{
         type: String,
         required: true
     }
+    
+    
+},{ timestamps: true, versionKey:false })
 
 
-}, { timestamps: true, versionKey: false })
-
-
-const BookModel = mongoose.model('Book', DataSchema, 'books');
-module.exports = BookModel;
+const Book = mongoose.model('Book', DataSchema, 'books');
+module.exports = Book;

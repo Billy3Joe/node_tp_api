@@ -1,157 +1,327 @@
-// const UserModel = require("../models/User");
-const BookModel = require("../models/Book");
+const User = require("../models/User");
+const Book = require("../models/Book");
 const mongoose = require("mongoose");
 const fs = require('fs');
+const { find, findOneAndUpdate } = require("../models/Book");
 const DIR = './';
 
 module.exports = class BookController {
 
-    //New Book Create
-    static createBook = async(req, res) => {
+  //New book Create
+  static createBook = async (req, res) => {
+    const isAdmin=res.locals.isAdmin;
+    
+    
+
+    try {
+      if(isAdmin){
         let payload = req.body;
         console.log(payload);
         //Image check if have then include image into payload
         var imgUrl = "";
         if (req.file) var imgUrl = `storage/images/${req.file.filename}`;
         payload.image = imgUrl;
+        var getImageName = payload.image.match(/\/([^\/?#]+)[^\/]*$/);
 
-        try {
-            const bookCreate = await new BookModel(payload).save();
-            return res.status(200).json({
-                code: 200,
-                message: "book Create Successfully",
-                data: bookCreate,
-            });
-        } catch (error) {
-            res.status(501).json({
-                code: 501,
-                message: error.message,
-                error: true,
-            });
-        }
-    };
-
-    //Get all Book
-    //All User information
-    static allBook = async(req, res) => {
-        try {
-            const allBookInfo = await BookModel.find();
-            console.log(allBookInfo);
-            return res.status(200).json({
-                code: 200,
-                message: "Book Information",
-                data: allBookInfo,
-                // .sort({ createdAt: -1 }) permet de ranger les posts su plus recents au plus anciens   
-            }).sort({ createdAt: -1 });;
-            //return console.log(singleBookInfo)
-        } catch (error) {
-            res.status(501).json({
-                code: 501,
-                message: error.message,
-                error: true,
-            });
-        }
+        const bookCreate = await new Book({
+          title:payload.title,
+          author:payload.author,
+          categories:payload.categories,
+          description:payload.description,
+          price:payload.price,
+          isbn:payload.isbn,
+          nbr_pages:payload.nbr_pages,
+          image:payload.image,
+          imageURL:`http://localhost:5000/book/${getImageName[1]}`
+        }).save();
+        return res.status(200).json({
+          code: 200,
+          message: "book Create Successfully",
+          data: bookCreate,
+        });
+      }else{res.status(401).json({
+        code: 401,
+        message: "you don't have access to add a book",
+        error: true,
+      });}
+      
+    } catch (error) {
+      res.status(501).json({
+        code: 501,
+        message: error.message,
+        error: true,
+      });
     }
+  };
 
 
-    //Single Book Information
-    static singleBook = async(req, res) => {
-        const id = req.params.id;
+  //Single book Information
+  static singleBook = async(req, res)=>{
+    const id = req.params.id;
 
-        try {
-            const singleBookInfo = await BookModel.findById(id);
-            const { title, author, categories, description, price, isbn, nbr_pages, image } = singleBookInfo;
-            var getImageName = image.match(/\/([^\/?#]+)[^\/]*$/);
+    try{
+      const singleBookInfo = await Book.findById(id);
+      const {title, author, categorie, description,price, isbn,review,nbr_pages,image} =singleBookInfo;
+      var getImageName = image.match(/\/([^\/?#]+)[^\/]*$/);
 
-            //return console.log(getImageName);
+      //return console.log(getImageName);
+      
+      const singleBookData ={
+        title, 
+        author, 
+        categorie, 
+        description,
+        price, 
+        isbn,
+        nbr_pages,
+        review,
+        imageUrl: `http://localhost:5000/book/${getImageName[1]}`
+      }
+      return res.status(200).json({
+        code: 200,
+        message: "User Information",
+        data: singleBookData,
+      });
+      //return console.log(singleUserInfo)
+    }
+    catch(error){
+      res.status(501).json({
+        code: 501,
+        message: error.message,
+        error: true,
+      });
+    }
+  }
 
-            const singleBookData = {
-                title,
-                author,
-                categories,
-                description,
-                price,
-                isbn,
-                nbr_pages,
-                image: `http://localhost:5000/book/${getImageName[1]}`
+  //All Book information
+  static allBook = async(req, res)=>{
+    try{
+      const allBookInfo = await Book.find().select("-image");
+      
+
+      //return console.log(singleUserInfo);
+      return res.status(200).json({
+        code: 200,
+        message: "User Information",
+        data: allBookInfo,
+      });
+    }
+    catch(error){
+      res.status(501).json({
+        code: 501,
+        message: error.message,
+        error: true,
+      });
+    }
+  }
+
+
+
+  //Book by genre
+  static GenreBook = async(req, res)=>{
+    const genre=req.params.genre
+    try{
+      const allBookInfo = await Book.find({categories:genre}).select("-image");
+      
+
+      //return console.log(singleUserInfo);
+      return res.status(200).json({
+        code: 200,
+        message: "User Information",
+        data: allBookInfo,
+      });
+    }
+    catch(error){
+      res.status(501).json({
+        code: 501,
+        message: error.message,
+        error: true,
+      });
+    }
+  }
+
+  //add review
+  static addReview = async (req, res) => {
+    let payload = req.body;
+
+    try {
+        if(res.locals.userId){
+            const id = payload.bookId
+            //console.log(payload.grade, payload.message)
+            const BookExist = await Book.findOne({_id: payload.bookId})
+            if(BookExist){
+                //const reviewCreate = await new Review(payload).save();
+                var avis = {UserId: res.locals.userId, grade: payload.grade, description: payload.message}
+                const updateItem = await Book.findOneAndUpdate( { _id: id }, {$push : {review: avis}});
+                console.log(avis)
+                return res.status(200).json({
+                    code: 200, 
+                    message: "review Create Successfully",
+                    data: updateItem,
+                });
+            }else{
+              res.status(401).json({
+                code:401,
+                message: "Book not exist",
+                error: true,
+              })
+            }
+        
+    }else{console.log("no id")}
+    } 
+    catch (error) {
+      res.status(501).json({
+        code: 501,
+        message: error.message,
+        error: true,
+      });
+    }
+  };
+
+  //Delete Book by admin
+  static deleteBook = async(req, res)=>{
+    const id = req.params.id;
+    const isAdmin=res.locals.isAdmin;
+    const BookExist = await Book.findOne({_id: id})
+    try{
+        if(isAdmin){
+          if(BookExist){
+            const userDeleteinfo = await Book.findOneAndDelete({_id: id});
+            const {image} = userDeleteinfo
+        
+
+            if(image){
+              fs.unlinkSync(DIR + image);
             }
             return res.status(200).json({
-                code: 200,
-                message: "Book Information",
-                data: singleBookData,
-            });
-            //return console.log(singleUserInfo)
-        } catch (error) {
-            res.status(501).json({
-                code: 501,
-                message: error.message,
-                error: true,
-            });
+              code: 200,
+              message: "Book Delete Successfully",
+              data: userDeleteinfo,
+            }); 
+          }else{
+            res.status(401).json({
+              code: 401,
+              message: "Book not exist"
+            }) 
+          }
+        }else{
+          res.status(401).json({
+            code: 401,
+            message: "you don't have access to delete"
+          })
         }
+          
+        
+    }catch(error){
+      res.status(501).json({
+        code: 501,
+        message: error.message,
+        error: true,
+      });
     }
+  }
 
-    //Book Update by User Id
-    static updateBook = async(req, res) => {
-        const id = req.params.id;
-        let reqBody = req.body;
 
-        //If File have then push file into reqBody then process update
-        var imgUrl = '';
-        if (req.file) var imgUrl = `storage/images/${req.file.filename}`;
+  //Update Book by id
+  static updateBook = async(req, res)=>{
+      try{
+        const id = req.params.id
+        const isAdmin = res.locals.isAdmin
+        var reqBody = req.body
+        console.log(req)
+        console.log(reqBody)
+        var imgUrl = "";
+        if (req.file){var imgUrl = `storage/images/${req.file.filename}`;
         reqBody.image = imgUrl;
+        var getImageName = reqBody.image.match(/\/([^\/?#]+)[^\/]*$/);
+        reqBody.imageURL = `http://localhost:5000/book/${getImageName[1]}`} 
+        
+          
+        if (isAdmin){
+          const updateItem = await Book.findOneAndUpdate( { _id: id }, reqBody );
 
+          return res.status(200).json({
+            code: 200,
+            message: "Book Update Information Successfully",
+            data: updateItem
+          });
 
-        try {
-            //Check user have photo/image. if had then first delete local file then database
-            const BookInfo = await BookModel.findById(id);
-            const bookPhotoInfo = BookInfo.image;
-            if (bookPhotoInfo) {
-                fs.unlinkSync(DIR + bookPhotoInfo);
-            }
-
-            const updateItem = await BookModel.findOneAndUpdate({ _id: id }, reqBody);
-            return res.status(200).json({
-                code: 200,
-                message: "Book Update Information Successfully",
-                data: updateItem,
-            });
-
-
-        } catch (error) {
-            res.status(501).json({
-                code: 501,
-                message: error.message,
-                error: true,
-            });
+        }else{
+          return res.status(501).json({
+            code: 500,
+            message: "auth required",
+          });
         }
+      }catch(error){
+        res.status(501).json({
+          code: 501,
+          message: error.message,
+          error: true,
+        });
+      }
 
+    
+    
+  }
+
+
+
+  //Delete review 
+  static deleteReview = async(req, res)=>{
+    const id= res.locals.userId;
+
+    const idBook = req.params.idBook;
+    const idReview= req.params.idReview;
+    const isAdmin=res.locals.isAdmin;
+    const BookExist = await Book.findOne({ _id: idBook}); 
+    const rev = BookExist.review;
+    var vrai = false
+    rev.forEach(function(avis){
+      if (avis.UserId==id){
+        vrai= true
+      }
+    })
+
+    
+    
+    
+
+    try{
+        if(isAdmin || vrai){
+          if(BookExist){
+            const userDeleteinfo = await Book.findOneAndUpdate({_id: idBook},{
+              $pull: {
+                  review: {_id: idReview},
+              },
+          });
+
+            return res.status(200).json({
+              code: 200,
+              message: "Review Delete Successfully",
+              data: userDeleteinfo,
+            });
+          }else{
+            res.status(401).json({
+              code: 401,
+              message: "Book not exist"
+            })
+          }
+        }else{
+          res.status(401).json({
+            code: 401,
+            message: "you don't have access to delete"
+          })
+        }
+          
+        
+    }catch(error){
+      res.status(501).json({
+        code: 501,
+        message: error.message,
+        error: true,
+      });
     }
 
+  }
 
-    //Book Delete By Book Id
-    static deleteBook = async(req, res) => {
-        const id = req.params.id;
-        //return console.log(id)
-        try {
-
-            const bookDeleteinfo = await BookModel.findOneAndDelete({ _id: id });
-            // const { avater } = userDeleteinfo
-
-            // if (avater) {
-            //     fs.unlinkSync(DIR + avater);
-            // }
-
-            return res.status(200).json({
-                code: 200,
-                message: "Book Delete Successfully",
-                data: bookDeleteinfo,
-            });
-        } catch (error) {
-            res.status(501).json({
-                code: 501,
-                message: error.message,
-                error: true,
-            });
-        }
-    }
 };

@@ -2,56 +2,24 @@
 const express = require('express');
 const router = require('./src/routes/api');
 const app = new express();
-//La bibliothèque nody-parser permet de lire une URL
 const bodyParser = require('body-parser');
-//La bibliothèque cookie-parser permet de lire un cookie
-const cookieParser = require('cookie-parser');
-//dotenv permet de réccupérer tout ce qui se trouve dans le fichier .env qu'on passe directement comme variable d'environnement
-require('dotenv').config({ path: './middleware/.env' });
-//On appel nos fonctions checkUser et requireAuth dépuis le fichier auth.middleware.js
-const { checkUser, requireAuth } = require('./middleware/auth.middleware');
-
 const mongoose = require('mongoose');
 const multer = require("multer");
-const cors = require('cors');
-
-//DEBUT LOGIN
-//Cors options (Les autorisations de nos requêtes)
-const corsOptions = {
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-    'allowedHeaders': ['sessionId', 'Content-Type'],
-    'exposedHeaders': ['sessionId'],
-    'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    'preflightContinue': false
-}
-app.use(cors(corsOptions));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-
-//JWT
-//* veut dire que si jamais une route correspond à n'imporquel route, tu déclanches checkUser qui va checker si l'utilisateur à bien le token qui correspond à un id
-//A chaque fois qu'on va faire un requête, il va checker
-app.get('*', checkUser);
-app.get('/jwtid', requireAuth, (req, res) => {
-    res.status(200).send(res.locals.user._id);
-});
-
-//FIN LOGIN
+const  cookieParser = require('cookie-parser');
 
 //App use 
 app.use(bodyParser.json());
 
-
+app.use(cookieParser());
 //connect mongoDB
-const URI = "mongodb://127.0.0.1:27017/library";
+const URI  = "mongodb://localhost:27017/library";
 mongoose.connect(URI,
     err => {
-        if (err) throw err;
+        if(err) throw err;
         console.log('connected to MongoDB')
     });
 
+app.use(express.json());
 // const URI  = "mongodb://localhost:27017/User_Profile";
 // mongoose.connect(URI,{
 //     useNewUrlParser: true, 
@@ -61,11 +29,12 @@ mongoose.connect(URI,
 //         if(err) throw err;
 //         console.log('connected to MongoDB')
 //     });
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
 //Static Image Url defined
 // sample Url: http://localhost:5000/user/photo_1648757395684.jpg
-//app.use('/user', express.static('storage/images'))
+app.use('/book', express.static('storage/images'))
 
 
 //Base Route
@@ -88,9 +57,10 @@ app.use((err, req, res, next) => {
 });
 
 //Undefined Route Implement
-app.use('*', (req, res) => {
-    res.status(404).json({ status: "fail", data: "Not Found" })
+app.use('*', (req, res)=>{
+    res.status(404).json({status:"fail", data:"Not Found"})
 });
 
 
 module.exports = app;
+

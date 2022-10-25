@@ -1,26 +1,84 @@
-# Node Express Image CRUD Sample
+# Library API
+ZERROUKI Mohammed Amine
+---
+Billy Joe KOM KAMZE
+---
+
+## Singup
+
+![This is a alt text.](/doc/Screen1.jpg)
 
 ---
 
-## Create Image
+## Login
 
-![This is a alt text.](/doc/Screenshot_20.png)
+ajouter le token dans les cookies
 
----
+![This is a alt text.](/doc/Login.jpg)
 
-## Single Information Data Fetch
+## get all user
 
-![This is a alt text.](/doc/Screenshot_23.png)
+faut etre admin pour recuperer tous les users
 
-## Information Update
+![This is a alt text.](/doc/all-user.jpg)
 
-![This is a alt text.](/doc/Screenshot_25.png)
+## Single User
 
-## Information Delete
+![This is a alt text.](/doc/Single-user.jpg)
 
-![This is a alt text.](/doc/Screenshot_27.png)
 
-## Install and Run
+## update User
 
-1. npm install
-2. nodemon index.js
+update avec l'id de user stocké dans le token
+
+![This is a alt text.](/doc/Update-user.jpg)
+
+## delete user
+
+chaque user peut supprimer son compte
+
+![This is a alt text.](/doc/delete-user.jpg)
+
+
+
+## Create Book
+
+juste l'admin qui peut creer un book
+
+![This is a alt text.](/doc/create-book.jpg)
+
+## get all book
+
+![This is a alt text.](/doc/all-book.jpg)
+
+## Book by genre
+
+categoriser les books
+
+![This is a alt text.](/doc/get-by-categorie.jpg)
+
+## Book By id
+
+![This is a alt text.](/doc/Single-Book-by-id.jpg)
+
+## add review
+
+ajouter un review
+
+![This is a alt text.](/doc/add-review.jpg)
+
+the review is added 
+
+![This is a alt text.](/doc/review-added.jpg)
+
+## delete Review
+
+supprimer le review avec id Book et id Review
+
+![This is a alt text.](/doc/delete-review.jpg)
+
+the review is deleted
+
+![This is a alt text.](/doc/review-deleted.jpg)
+
+
