@@ -5,17 +5,17 @@ const app = new express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require("multer");
-const  cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 
 //App use 
 app.use(bodyParser.json());
 
 app.use(cookieParser());
 //connect mongoDB
-const URI  = "mongodb://localhost:27017/library";
+const URI = "mongodb://127.0.0.1:27017/library";
 mongoose.connect(URI,
     err => {
-        if(err) throw err;
+        if (err) throw err;
         console.log('connected to MongoDB')
     });
 
@@ -30,7 +30,7 @@ app.use(express.json());
 //         console.log('connected to MongoDB')
 //     });
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 //Static Image Url defined
 // sample Url: http://localhost:5000/user/photo_1648757395684.jpg
@@ -57,10 +57,9 @@ app.use((err, req, res, next) => {
 });
 
 //Undefined Route Implement
-app.use('*', (req, res)=>{
-    res.status(404).json({status:"fail", data:"Not Found"})
+app.use('*', (req, res) => {
+    res.status(404).json({ status: "fail", data: "Not Found" })
 });
 
 
 module.exports = app;
-
