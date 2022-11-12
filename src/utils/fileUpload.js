@@ -4,6 +4,7 @@ const path = require("path");
 const storage = (destination)=> multer.diskStorage({
     destination: destination,
     filename: (req, file, cb) => {
+        console.log('my file ======>',file);
         return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
     }
 })

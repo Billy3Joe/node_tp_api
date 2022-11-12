@@ -5,17 +5,17 @@ const app = new express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require("multer");
-const cookieParser = require('cookie-parser');
+const  cookieParser = require('cookie-parser');
 
 //App use 
 app.use(bodyParser.json());
 
 app.use(cookieParser());
 //connect mongoDB
-const URI = "mongodb://127.0.0.1:27017/library";
+const URI  = "mongodb://127.0.0.1:27017/library";
 mongoose.connect(URI,
     err => {
-        if (err) throw err;
+        if(err) throw err;
         console.log('connected to MongoDB')
     });
 
@@ -30,8 +30,18 @@ app.use(express.json());
 //         console.log('connected to MongoDB')
 //     });
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(bodyParser.urlencoded({extended: true}));
+app.use((req,res,next)=>{
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    );
+next()});
 //Static Image Url defined
 // sample Url: http://localhost:5000/user/photo_1648757395684.jpg
 app.use('/book', express.static('storage/images'))
@@ -57,9 +67,10 @@ app.use((err, req, res, next) => {
 });
 
 //Undefined Route Implement
-app.use('*', (req, res) => {
-    res.status(404).json({ status: "fail", data: "Not Found" })
+app.use('*', (req, res)=>{
+    res.status(404).json({status:"fail", data:"Not Found"})
 });
 
 
 module.exports = app;
+

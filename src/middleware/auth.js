@@ -7,8 +7,8 @@ module.exports = (req, res, next) => {
         // header dans la requete ==> authorization : 'Bearer xxxxxxxxx';
         
         // Extraire le token de l'entête
-        // const token = req.headers.authorization.split(' ')[1];
-        const token =req.cookies.jwt;
+        const token = req.headers.authorization.split(' ')[1];
+        //const token =req.cookies.jwt;
         
 
         // Vérifier le token

@@ -16,8 +16,9 @@ module.exports = class BookController {
     try {
       if(isAdmin){
         let payload = req.body;
-        console.log(payload);
-        //Image check if have then include image into payload
+        console.log('file added',req.body);
+        console.log('data ====>',payload)
+       //Image check if have then include image into payload
         var imgUrl = "";
         if (req.file) var imgUrl = `storage/images/${req.file.filename}`;
         payload.image = imgUrl;
@@ -58,15 +59,17 @@ module.exports = class BookController {
   //Single book Information
   static singleBook = async(req, res)=>{
     const id = req.params.id;
-
+    console.log(id)
     try{
       const singleBookInfo = await Book.findById(id);
-      const {title, author, categorie, description,price, isbn,review,nbr_pages,image} =singleBookInfo;
-      var getImageName = image.match(/\/([^\/?#]+)[^\/]*$/);
+      console.log(singleBookInfo);
+      const {_id,title, author, categorie, description,price, isbn,review,nbr_pages,imageURL} =singleBookInfo;
+      //var getImageName = image.match(/\/([^\/?#]+)[^\/]*$/);
 
       //return console.log(getImageName);
       
       const singleBookData ={
+        _id,
         title, 
         author, 
         categorie, 
@@ -75,7 +78,7 @@ module.exports = class BookController {
         isbn,
         nbr_pages,
         review,
-        imageUrl: `http://localhost:5000/book/${getImageName[1]}`
+        imageURL
       }
       return res.status(200).json({
         code: 200,
@@ -151,7 +154,7 @@ module.exports = class BookController {
             const BookExist = await Book.findOne({_id: payload.bookId})
             if(BookExist){
                 //const reviewCreate = await new Review(payload).save();
-                var avis = {UserId: res.locals.userId, grade: payload.grade, description: payload.message}
+                var avis = {UserId: res.locals.userId, grade: payload.grade, description: payload.message, idBook:payload.bookId}
                 const updateItem = await Book.findOneAndUpdate( { _id: id }, {$push : {review: avis}});
                 console.log(avis)
                 return res.status(200).json({

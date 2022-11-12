@@ -12,23 +12,23 @@ const DataSchema = new mongoose.Schema({
     },
     categories:{
         type: String,
-        reqired: true
+        reqired: false
     },
     description: {
         type: String,
-        required: true
+        required: false
     },
     price: {
         type: Number,
-        required: true,
+        required: false,
     },
     isbn:{
         type:String,
-        required: true
+        required: false
     },
     nbr_pages:{
         type:Number,
-        required: true
+        required: false
     },
     review:[
         {
@@ -41,8 +41,7 @@ const DataSchema = new mongoose.Schema({
         type:String
     },
     image:{
-        type: String,
-        required: true
+        type: String
     }
     
     

@@ -149,7 +149,7 @@ if(!Exist){
                 'RANDOM_TOKEN_SECRET',
                 { expiresIn: '24h' }
             )
-              res.cookie('jwt',token, {  expiresIn: '24h' , httpOnly: true })
+              //res.cookie('jwt',token, {  expiresIn: '24h' , httpOnly: true })
               res.status(200).json({ 
                 userId: _id, 
                 token: jwt.sign(
@@ -163,7 +163,7 @@ if(!Exist){
                 isAdmin: role
             });
             }else{
-              return res.status(501).json({
+              return res.status(401).json({
                 code: 500,
                 message: "password incorrect",
               });
